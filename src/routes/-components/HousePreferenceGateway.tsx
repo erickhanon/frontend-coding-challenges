@@ -12,7 +12,7 @@ export const HousePreferenceGateway = ({ children }: HousePreferenceGatewayProps
   const preferredHouse = useAppStore((store) => store.preferredHouse);
   const setPreferredHouse = useAppStore((store) => store.setPreferredHouse);
 
-  if (preferredHouse) return <>{children}</>;
+  if (preferredHouse !== undefined) return <>{children}</>;
 
   return (
     <div className="flex flex-col items-center justify-center gap-8 pt-30">
