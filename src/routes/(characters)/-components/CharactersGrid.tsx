@@ -1,9 +1,13 @@
 import { Spinner } from "@lib/components/Spinner";
+import { CharacterFilterType } from "@lib/constants/filters";
+import { useAppStore } from "@lib/hooks/useAppStore";
 import { CharacterCard } from "./CharacterCard";
 import { useCharacters } from "../-hooks/useCharacters";
 
-export const CharactersGrid = () => {
-  const { characters, isLoading, isError } = useCharacters();
+export const CharactersGrid = ({ filter }: { filter?: CharacterFilterType }) => {
+  const { characters, isLoading, isError } = useCharacters(filter);
+  const favoriteCharacterIds = useAppStore((state) => state.favoriteCharacterIds);
+  const toggleFavorite = useAppStore((state) => state.toggleFavorite);
 
   if (isLoading) {
     return (
@@ -37,6 +41,8 @@ export const CharactersGrid = () => {
         <CharacterCard
           key={character.id}
           character={character}
+          isFavorite={favoriteCharacterIds.includes(character.id)}
+          onFavoriteToggle={toggleFavorite}
           className="transition-transform duration-300 hover:scale-105 hover:shadow-xl"
         />
       ))}
