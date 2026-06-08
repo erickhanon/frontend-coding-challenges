@@ -43,6 +43,7 @@ export const CharactersGrid = ({ filter }: { filter?: CharacterFilterType }) => 
           character={character}
           isFavorite={favoriteCharacterIds.includes(character.id)}
           onFavoriteToggle={toggleFavorite}
+          navigable
           className="transition-transform duration-300 hover:scale-105 hover:shadow-xl"
         />
       ))}

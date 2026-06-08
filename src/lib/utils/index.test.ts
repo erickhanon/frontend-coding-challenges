@@ -26,4 +26,8 @@ describe("formatDate", () => {
   it("returns null for empty string", () => {
     expect(formatDate("")).toBeNull();
   });
+
+  it("returns null for invalid dates", () => {
+    expect(formatDate("not-a-date")).toBeNull();
+  });
 });

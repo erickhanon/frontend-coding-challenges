@@ -9,6 +9,7 @@ export type CharacterSearch = {
 export const isCharacterFilter = (value: unknown): value is CharacterFilterType =>
   characterFilters.some((filter) => filter === value);
 
+// Bug fix: invalid URL filters fall back to All Characters.
 export const validateCharacterSearch = (search: Record<string, unknown>): CharacterSearch => ({
   filter: isCharacterFilter(search.filter) ? search.filter : undefined,
 });

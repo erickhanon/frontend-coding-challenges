@@ -1,38 +1,8 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/react-router";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useAppStore } from "@lib/hooks/useAppStore";
-import { routeTree } from "../../routeTree.gen";
 import { mockCharacters } from "../../test/mocks";
-
-const renderCharactersRoute = async (initialEntry = "/") => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  });
-  const history = createMemoryHistory({ initialEntries: [initialEntry] });
-  const router = createRouter({
-    routeTree,
-    history,
-    context: {
-      queryClient,
-    },
-  });
-
-  render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
-
-  await act(() => router.load());
-
-  return router;
-};
+import { renderAppRoute } from "../../test/renderAppRoute";
 
 describe("characters index route filters", () => {
   beforeEach(() => {
@@ -40,7 +10,9 @@ describe("characters index route filters", () => {
       preferredHouse: null,
       favoriteCharacterIds: [],
     });
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(mockCharacters)));
+    vi.spyOn(globalThis, "fetch").mockImplementation(() =>
+      Promise.resolve(new Response(JSON.stringify(mockCharacters)))
+    );
   });
 
   afterEach(() => {
@@ -48,7 +20,7 @@ describe("characters index route filters", () => {
   });
 
   it("updates and removes the filter search parameter from filter button clicks", async () => {
-    const router = await renderCharactersRoute();
+    const { router } = await renderAppRoute();
 
     await userEvent.click(screen.getByRole("button", { name: "Students" }));
 
@@ -87,12 +59,51 @@ describe("characters index route filters", () => {
   });
 
   it("falls back to All Characters when the URL contains an invalid filter", async () => {
-    await renderCharactersRoute("/?filter=invalid");
+    await renderAppRoute("/?filter=invalid");
 
     expect(await screen.findByText("Harry Potter")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "All Characters" })).toHaveAttribute(
       "aria-pressed",
       "true"
     );
+  });
+});
+
+describe("characters index route card interactions", () => {
+  beforeEach(() => {
+    useAppStore.setState({
+      preferredHouse: null,
+      favoriteCharacterIds: [],
+    });
+    vi.spyOn(globalThis, "fetch").mockImplementation(() =>
+      Promise.resolve(new Response(JSON.stringify(mockCharacters)))
+    );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("navigates to the typed character detail route from a card", async () => {
+    const { router } = await renderAppRoute();
+
+    await userEvent.click(await screen.findByRole("link", { name: "View Harry Potter details" }));
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe("/characters/1");
+    });
+  });
+
+  it("toggles a favorite without navigating to the detail route", async () => {
+    const toggleFavorite = vi.spyOn(useAppStore.getState(), "toggleFavorite");
+    const { router } = await renderAppRoute();
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Add Harry Potter to favorites" })
+    );
+
+    expect(toggleFavorite).toHaveBeenCalledWith(mockCharacters[0].id);
+    expect(useAppStore.getState().favoriteCharacterIds).toEqual([mockCharacters[0].id]);
+    expect(router.state.location.pathname).toBe("/");
   });
 });

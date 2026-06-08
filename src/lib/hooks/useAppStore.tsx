@@ -24,6 +24,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: "the-harry-potter-app-storage",
+      // Bug fix: persist stable IDs only, objects bloat localStorage.
       partialize: ({ preferredHouse, favoriteCharacterIds }) => ({
         preferredHouse,
         favoriteCharacterIds,

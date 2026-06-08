@@ -11,13 +11,13 @@ export const InfoSection = ({
   icon: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div>
-    <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold">
+  <section>
+    <h2 className="mb-6 flex items-center gap-3 text-xl font-semibold tracking-wide uppercase sm:text-2xl">
       {icon}
       {title}
-    </h3>
+    </h2>
     {children}
-  </div>
+  </section>
 );
 
 InfoSection.Grid = Grid;

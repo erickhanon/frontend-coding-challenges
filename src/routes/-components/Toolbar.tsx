@@ -15,13 +15,25 @@ export const Toolbar = () => {
     }
   };
 
+  const handleBack = () => {
+    if (router.history.canGoBack()) {
+      router.history.back();
+      return;
+    }
+
+    // Bug fix: direct detail visits have no history, so back must return to the list.
+    router.navigate({ to: "/" });
+  };
+
   return (
     <div className="flex items-center justify-between bg-amber-900/15 p-4">
       <div className="flex flex-1 items-center">
         <div className="mr-4 flex w-8 items-center justify-center">
           {!isRootRoute && (
             <button
-              onClick={() => router.history.back()}
+              type="button"
+              onClick={handleBack}
+              aria-label="Go back"
               className="text-amber-200 hover:text-amber-100"
             >
               <ArrowLeft size={20} />
@@ -32,6 +44,7 @@ export const Toolbar = () => {
       </div>
 
       <button
+        type="button"
         onClick={handleHouseSelection}
         className="flex items-center gap-2 pr-9 text-amber-200 hover:text-amber-100"
         aria-label="Change house selection"

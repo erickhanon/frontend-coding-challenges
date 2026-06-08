@@ -9,8 +9,10 @@ beforeEach(() => {
 });
 
 describe("fetchCharacter", () => {
-  it("returns a character when found", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify([mockCharacter])));
+  it("returns the first character when found", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify([mockCharacter, mockCharacters[1]]))
+    );
 
     const result = await fetchCharacter("1");
     expect(result).toEqual(mockCharacter);

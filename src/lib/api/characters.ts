@@ -7,6 +7,7 @@ export const fetchCharacter = async (id: string): Promise<Character | null> => {
     throw new Error("Network response was not ok");
   }
   const data: Character[] = await response.json();
+  // Bug fix: This endpoint returns an array even when requesting a single character.
   return data.length > 0 ? data[0] : null;
 };
 

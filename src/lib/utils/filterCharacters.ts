@@ -12,6 +12,7 @@ export const filterCharacters = (
     case "staff":
       return characters.filter((character) => character.hogwartsStaff);
     case "favorite": {
+      // Bug fix: Use IDs here instead of relying on character object references 
       const favoriteIds = new Set(favoriteCharacterIds);
       return characters.filter((character) => favoriteIds.has(character.id));
     }

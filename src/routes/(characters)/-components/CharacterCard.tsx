@@ -1,11 +1,13 @@
 import { cn } from "@lib/utils";
 import { Character } from "@lib/constants/characters";
+import { Link } from "@tanstack/react-router";
 import { Star } from "lucide-react";
 
 type CharacterCardProps = {
   character: Character;
   isFavorite: boolean;
   onFavoriteToggle: (characterId: string) => void;
+  navigable?: boolean;
   className?: string;
 };
 
@@ -13,6 +15,7 @@ export const CharacterCard = ({
   character,
   isFavorite,
   onFavoriteToggle,
+  navigable = false,
   className,
 }: CharacterCardProps) => {
   const characterName = character.name ?? "character";
@@ -41,7 +44,16 @@ export const CharacterCard = ({
       >
         <Star size={24} fill={isFavorite ? "currentColor" : "none"} />
       </button>
-      <h3 className="z-10 font-light tracking-wide">{character.name}</h3>
+      {/* Bug fix: Keep the card link separate from the favorite button to avoid nested interactive elements. */}
+      {navigable && (
+        <Link
+          to="/characters/$characterId"
+          params={{ characterId: character.id }}
+          aria-label={`View ${characterName} details`}
+          className="absolute inset-0 z-10 rounded-2xl focus-visible:ring-2 focus-visible:ring-yellow-500 focus-visible:outline-none"
+        />
+      )}
+      <h3 className="pointer-events-none z-10 font-light tracking-wide">{character.name}</h3>
     </article>
   );
 };
